@@ -1,12 +1,48 @@
 import View from './view';
+import { state } from '../model';
 class ListView extends View {
+  #page;
+  #pageSize;
+  #paginationContainer;
+  #totalPages;
   constructor() {
     super();
     this.parentElement = document.querySelector('.results');
+    this.#pageSize = 15;
+    this.#page = 1;
+    this.#paginationContainer = document.querySelector('.pagination');
   }
+  render(data) {
+    this.data = data;
+    this.#totalPages = Math.ceil(data.length / this.#pageSize);
+    const markup = this._generateMarkup();
+    this._clear();
+    this.parentElement.insertAdjacentHTML('afterbegin', markup);
+    this.#generatePageBtns();
+  }
+  #refresh() {
+    this._clear();
+    const markup = this._generateMarkup();
+    this.parentElement.insertAdjacentHTML('afterbegin', markup);
+    this.#generatePageBtns();
+  }
+  nextHandler = e => {
+    e.preventDefault();
+    this.#page++;
+    this.renderSpinner();
+    this.#refresh();
+  };
+  prevHandler = e => {
+    e.preventDefault();
+    this.#page--;
+    this.#refresh();
+  };
 
   _generateMarkup() {
+    const startIndex = (this.#page - 1) * this.#pageSize;
+    const endIndex = startIndex + this.#pageSize;
     return this.data
+      .slice(startIndex, endIndex)
       .map(recipe => {
         return `
       <li class="preview">
@@ -28,6 +64,34 @@ class ListView extends View {
       })
       .join('');
   }
+  #generatePageBtns = () => {
+    const hasPrevPage = this.#page > 1;
+    const hasNextPage = this.#page < this.#totalPages;
+    this.#paginationContainer.innerHTML = '';
+    this.#paginationContainer.insertAdjacentHTML(
+      'afterbegin',
+      `
+    <button class="btn--inline pagination__btn--prev ${hasPrevPage ? '' : 'hidden'}" ${hasPrevPage ? '' : 'disabled'}>
+      <svg class="search__icon">
+        <use href="${this.icons}.svg#icon-arrow-left"></use>
+      </svg>
+      <span>Page ${this.#page - 1}</span>
+    </button>
+    <button class="btn--inline pagination__btn--next ${hasNextPage ? '' : 'hidden'}" ${hasNextPage ? '' : 'disabled'}>
+      <span>Page ${this.#page + 1}</span>
+      <svg class="search__icon">
+        <use href="${this.icons}#icon-arrow-right"></use>
+      </svg>
+    </button>
+    `,
+    );
+    document
+      .querySelector('.pagination__btn--prev')
+      .addEventListener('click', this.prevHandler);
+    document
+      .querySelector('.pagination__btn--next')
+      .addEventListener('click', this.nextHandler);
+  };
 }
 
 export default new ListView();
