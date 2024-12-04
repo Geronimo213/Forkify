@@ -4,8 +4,10 @@ class RecipeView extends View {
   constructor() {
     super();
     this.parentElement = document.querySelector('.recipe');
+    this.errorMessage = "Couldn't find that recipe. Try another one!";
+    this.successMessage = '';
   }
-  _generateMarkup() {
+  _generateMarkup(data) {
     return `<figure class="recipe__fig">
           <img src="${this.data.image}" alt="${this.data.title}" class="recipe__img" />
           <h1 class="recipe__title">
@@ -29,7 +31,7 @@ class RecipeView extends View {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--decrease-servings">
                 <svg>
                   <use href="${this.icons}#icon-minus-circle"></use>
                 </svg>
@@ -93,6 +95,21 @@ class RecipeView extends View {
                 ${ingredient.description}
               </div>
             </li>`;
+  }
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  }
+  addHandlerServings() {
+    document
+      .querySelector('.btn--decrease-servings')
+      .addEventListener('click', e => {
+        console.log('clicked');
+      });
+    document
+      .querySelector('.btn--increase-servings')
+      .addEventListener('click', e => {
+        console.log('clicked');
+      });
   }
 }
 

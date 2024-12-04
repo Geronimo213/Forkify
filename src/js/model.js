@@ -1,17 +1,8 @@
 // https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza&key=<insert your key>
-const forkifyApiBase = 'https://forkify-api.herokuapp.com/api/v2/recipes';
-const getSecrets = async () => {
-  const res = await fetch('./secrets.json');
-  return res.json();
-};
-let secrets;
-getSecrets()
-  .then(secretJSON => {
-    secrets = secretJSON.forkifyApi;
-  })
-  .catch(error => {
-    console.error(error);
-  });
+
+import { forkifyApiBase } from './config';
+import { secrets } from './config';
+import { getJSON } from './helpers';
 
 export const state = {
   recipe: {},
@@ -19,11 +10,7 @@ export const state = {
 
 export const loadRecipes = async recipeId => {
   try {
-    const res = await fetch(`${forkifyApiBase}/${recipeId}`);
-    const data = await res.json();
-    if (!res.ok)
-      return Promise.reject(Error(`${data.message} (${res.status})`));
-
+    const data = await getJSON(`${forkifyApiBase}/${recipeId}`);
     let { recipe } = data.data;
     state.recipe = {
       id: recipe.id,
@@ -36,16 +23,14 @@ export const loadRecipes = async recipeId => {
       ingredients: recipe.ingredients,
     };
   } catch (err) {
-    console.error(err);
+    throw err;
   }
 };
 export const loadSearchResults = async searchTerms => {
   try {
-    const res = await fetch(`${forkifyApiBase}?search=${searchTerms}`);
-    const data = await res.json();
-    if (!res.ok)
-      return Promise.reject(Error(`${data.message} (${res.status})`));
+    const data = await getJSON(`${forkifyApiBase}?search=${searchTerms}`);
     const { recipes } = data.data;
+    if (recipes.length < 1) return Promise.reject('No recipes found!');
     state.searchResults = recipes.map(recipe => {
       return {
         id: recipe.id,
@@ -55,6 +40,6 @@ export const loadSearchResults = async searchTerms => {
       };
     });
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 };

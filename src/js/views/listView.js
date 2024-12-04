@@ -1,5 +1,4 @@
 import View from './view';
-import { state } from '../model';
 class ListView extends View {
   #page;
   #pageSize;
@@ -8,21 +7,21 @@ class ListView extends View {
   constructor() {
     super();
     this.parentElement = document.querySelector('.results');
-    this.#pageSize = 15;
+    this.#pageSize = 14;
     this.#page = 1;
     this.#paginationContainer = document.querySelector('.pagination');
   }
   render(data) {
     this.data = data;
     this.#totalPages = Math.ceil(data.length / this.#pageSize);
-    const markup = this._generateMarkup();
+    const markup = this._generateMarkup(data);
     this._clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
     this.#generatePageBtns();
   }
-  #refresh() {
+  #refresh(data) {
     this._clear();
-    const markup = this._generateMarkup();
+    const markup = this._generateMarkup(data);
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
     this.#generatePageBtns();
   }
@@ -30,18 +29,18 @@ class ListView extends View {
     e.preventDefault();
     this.#page++;
     this.renderSpinner();
-    this.#refresh();
+    this.#refresh(this.data);
   };
   prevHandler = e => {
     e.preventDefault();
     this.#page--;
-    this.#refresh();
+    this.#refresh(this.data);
   };
 
-  _generateMarkup() {
+  _generateMarkup(data) {
     const startIndex = (this.#page - 1) * this.#pageSize;
     const endIndex = startIndex + this.#pageSize;
-    return this.data
+    return data
       .slice(startIndex, endIndex)
       .map(recipe => {
         return `
@@ -92,6 +91,7 @@ class ListView extends View {
       .querySelector('.pagination__btn--next')
       .addEventListener('click', this.nextHandler);
   };
+  addHandlerRender(handler) {}
 }
 
 export default new ListView();
