@@ -84,7 +84,7 @@ export default class View {
       return this.renderError();
     }
     this.data = data;
-    const markup = this._generateMarkup();
+    const markup = this._generateMarkup(data);
     this._clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }

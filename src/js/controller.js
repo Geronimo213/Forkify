@@ -5,7 +5,8 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import listView from './views/listView.js';
 import searchView from './views/searchView.js';
-import { state } from './model.js';
+import { readBookmarks, state } from './model.js';
+import bookmarksView from './views/bookmarksView.js';
 
 if (module.hot) {
   module.hot.accept();
@@ -55,10 +56,22 @@ const controlServings = function (newServing) {
   model.updateServings(newServing);
   recipeView.update(model.state.recipe);
 };
+const controlToggleBookmark = function () {
+  model.toggleBookmark(model.state.recipe);
+  model.persistBookmarks();
+  recipeView.update(model.state.recipe);
+};
+const handleBookmarkRender = function (e) {
+  e.preventDefault();
+  bookmarksView.render(state.bookmarks);
+}
 
 const init = function () {
+  readBookmarks();
   recipeView.addHandlerRender(showRecipe);
   searchView.addHandlerRender(handleSearch);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerBookmark(controlToggleBookmark);
+  bookmarksView.addHandlerRender(handleBookmarkRender)
 };
 init();

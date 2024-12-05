@@ -5,6 +5,7 @@ import { secrets } from './config';
 import { getJSON } from './helpers';
 export const state = {
   recipe: {},
+  bookmarks: [],
 };
 
 export const loadRecipes = async recipeId => {
@@ -21,6 +22,8 @@ export const loadRecipes = async recipeId => {
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients,
     };
+
+    state.recipe.bookmarked = state.bookmarks.some(bookmark => bookmark.id === recipeId);
   } catch (err) {
     throw err;
   }
@@ -49,3 +52,22 @@ export const updateServings = function (newServings) {
   });
   state.recipe.servings = newServings;
 };
+
+export const toggleBookmark = function (recipe) {
+  if (state.recipe.bookmarked) {
+    state.bookmarks.splice(state.bookmarks.findIndex(bm => bm.id === recipe.id), 1);
+  }
+  else {
+  // Add bookmark
+    state.bookmarks.push(recipe);
+  }
+  // Mark current recipe as bookmark
+    state.recipe.bookmarked = !state.recipe.bookmarked;
+};
+export const persistBookmarks = function() {
+  const bookmarks = JSON.stringify(state.bookmarks);
+  localStorage.setItem('bookmarks', bookmarks);
+}
+export const readBookmarks = function () {
+  state.bookmarks = JSON.parse(localStorage.getItem('bookmarks')) ?? [];
+}

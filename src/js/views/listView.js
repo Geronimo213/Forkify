@@ -14,6 +14,7 @@ class ListView extends View {
   render(data) {
     this.data = data;
     this.#totalPages = Math.ceil(data.length / this.#pageSize);
+    this.#page = 1;
     const markup = this._generateMarkup(data);
     this._clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
