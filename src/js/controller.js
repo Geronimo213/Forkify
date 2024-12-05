@@ -5,7 +5,11 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import listView from './views/listView.js';
 import searchView from './views/searchView.js';
+import { state } from './model.js';
 
+if (module.hot) {
+  module.hot.accept();
+}
 ///////////////////////////////////////
 // Element selectors
 //////////////////////////////////////
@@ -22,13 +26,15 @@ const showRecipe = async function () {
     const recipeId = window.location.hash.slice(1);
     if (!recipeId) return;
     recipeView.renderSpinner();
-
+    // Update results to mark selected result
+    if (model.state.searchResults) {
+      listView.update(model.state.searchResults);
+    }
     // Load recipe
     await model.loadRecipes(recipeId);
     const { recipe } = model.state;
     //Render recipe
-    recipeView.render(model.state.recipe);
-    recipeView.addHandlerServings();
+    recipeView.render(recipe);
   } catch (err) {
     recipeView.renderError();
   }
@@ -45,12 +51,14 @@ const handleSearch = async function (e) {
     listView.renderError(err);
   }
 };
-const handleServings = function (e) {
-  e.preventDefault();
+const controlServings = function (newServing) {
+  model.updateServings(newServing);
+  recipeView.update(model.state.recipe);
 };
 
 const init = function () {
   recipeView.addHandlerRender(showRecipe);
   searchView.addHandlerRender(handleSearch);
+  recipeView.addHandlerUpdateServings(controlServings);
 };
 init();

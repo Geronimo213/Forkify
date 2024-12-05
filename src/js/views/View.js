@@ -1,11 +1,11 @@
 import icons from 'url:../../img/icons.svg';
 
-/**
- * @template
- */
 export default class View {
   #data;
   #icons = icons;
+  /**
+   * @type Element
+   */
   #parentElement;
   #errorMessage = '';
   #successMessage = '';
@@ -18,6 +18,11 @@ export default class View {
   get icons() {
     return this.#icons;
   }
+
+  /**
+   *
+   * @returns {Element}
+   */
   get parentElement() {
     return this.#parentElement;
   }
@@ -74,14 +79,39 @@ export default class View {
     </div>`;
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   }
-  _clear() {
-    this.parentElement.innerHTML = '';
-  }
   render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return this.renderError();
+    }
     this.data = data;
     const markup = this._generateMarkup();
     this._clear();
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+  update(data) {
+    this.data = data;
+    const newMarkup = this._generateMarkup(data);
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDOM.querySelectorAll('*'));
+    const curElements = Array.from(this.parentElement.querySelectorAll('*'));
+    newElements.forEach((newElement, idx) => {
+      const currentElement = curElements[idx];
+      if (
+        !newElement.isEqualNode(currentElement) &&
+        newElement.firstChild?.nodeValue.trim() !== ''
+      ) {
+        currentElement.textContent = newElement.textContent;
+      }
+      // Update new attributes
+      if (!newElement.isEqualNode(currentElement)) {
+        Array.from(newElement.attributes).forEach(attribute =>
+          currentElement.setAttribute(attribute.name, attribute.value),
+        );
+      }
+    });
+  }
+  _clear() {
+    this.parentElement.innerHTML = '';
   }
 
   /**

@@ -28,7 +28,6 @@ class ListView extends View {
   nextHandler = e => {
     e.preventDefault();
     this.#page++;
-    this.renderSpinner();
     this.#refresh(this.data);
   };
   prevHandler = e => {
@@ -38,6 +37,7 @@ class ListView extends View {
   };
 
   _generateMarkup(data) {
+    const id = window.location.hash.slice(1);
     const startIndex = (this.#page - 1) * this.#pageSize;
     const endIndex = startIndex + this.#pageSize;
     return data
@@ -45,7 +45,7 @@ class ListView extends View {
       .map(recipe => {
         return `
       <li class="preview">
-        <a class="preview__link preview__link--active" href="#${recipe.id}">
+        <a class="preview__link ${recipe.id === id ? 'preview__link--active' : ''}" href="#${recipe.id}">
         <figure class="preview__fig">
           <img src="${recipe.imageUrl}" alt="${recipe.title}" />
         </figure>

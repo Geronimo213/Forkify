@@ -7,6 +7,7 @@ class RecipeView extends View {
     this.errorMessage = "Couldn't find that recipe. Try another one!";
     this.successMessage = '';
   }
+
   _generateMarkup(data) {
     return `<figure class="recipe__fig">
           <img src="${this.data.image}" alt="${this.data.title}" class="recipe__img" />
@@ -31,12 +32,12 @@ class RecipeView extends View {
             <span class="recipe__info-text">servings</span>
 
             <div class="recipe__info-buttons">
-              <button class="btn--tiny btn--decrease-servings">
+              <button class="btn--tiny btn--decrease-servings" data-new-servings="${Number(this.data.servings) - 1}">
                 <svg>
                   <use href="${this.icons}#icon-minus-circle"></use>
                 </svg>
               </button>
-              <button class="btn--tiny btn--increase-servings">
+              <button class="btn--tiny btn--increase-servings" data-new-servings="${Number(this.data.servings) + 1}">
                 <svg>
                   <use href="${this.icons}#icon-plus-circle"></use>
                 </svg>
@@ -99,17 +100,13 @@ class RecipeView extends View {
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
   }
-  addHandlerServings() {
-    document
-      .querySelector('.btn--decrease-servings')
-      .addEventListener('click', e => {
-        console.log('clicked');
-      });
-    document
-      .querySelector('.btn--increase-servings')
-      .addEventListener('click', e => {
-        console.log('clicked');
-      });
+  addHandlerUpdateServings(handler) {
+    this.parentElement.addEventListener('click', e => {
+      const btn = e.target.closest('.btn--tiny');
+      if (!btn) return;
+      const { newServings } = btn.dataset;
+      if (+newServings > 0) handler(+newServings);
+    });
   }
 }
 

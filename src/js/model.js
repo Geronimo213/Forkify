@@ -3,7 +3,6 @@
 import { forkifyApiBase } from './config';
 import { secrets } from './config';
 import { getJSON } from './helpers';
-
 export const state = {
   recipe: {},
 };
@@ -42,4 +41,11 @@ export const loadSearchResults = async searchTerms => {
   } catch (error) {
     throw error;
   }
+};
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ingredient => {
+    ingredient.quantity =
+      (ingredient.quantity * newServings) / state.recipe.servings;
+  });
+  state.recipe.servings = newServings;
 };
