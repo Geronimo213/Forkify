@@ -124,7 +124,6 @@ export default class View {
   }
 
   /**
-   * @abstract
    * @param handler - callback function to handler
    * @returns void
    */

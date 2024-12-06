@@ -1,5 +1,6 @@
 export const CONSTANTS = {
   TIME_OUT_SECONDS: 10,
+  DELAY_MODAL_CLOSE: 1.5,
 };
 
 export const forkifyApiBase =

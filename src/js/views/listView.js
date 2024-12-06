@@ -53,7 +53,7 @@ class ListView extends View {
         <div class="preview__data">
           <h4 class="preview__title">${recipe.title.substring(0, 30)} ...</h4>
           <p class="preview__publisher">${recipe.publisher}</p>
-          <div class="preview__user-generated">
+          <div class="preview__user-generated ${recipe.key ? '' : 'hidden'}">
             <svg>
               <use href="${this.icons}#icon-user"></use>
             </svg>
