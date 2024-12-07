@@ -1,4 +1,5 @@
 import View from './view';
+import { CONSTANTS } from '../config';
 class ListView extends View {
   #page;
   #pageSize;
@@ -7,7 +8,7 @@ class ListView extends View {
   constructor() {
     super();
     this.parentElement = document.querySelector('.results');
-    this.#pageSize = 14;
+    this.#pageSize = CONSTANTS.PAGE_SIZE;
     this.#page = 1;
     this.#paginationContainer = document.querySelector('.pagination');
   }

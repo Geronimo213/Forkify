@@ -1,5 +1,6 @@
 import View from './View.js';
 import { state } from '../model';
+import { timeout } from '../helpers';
 
 class AddRecipeView extends View {
   #window;
@@ -28,16 +29,24 @@ class AddRecipeView extends View {
     );
   }
   addHandlerSubmit(handler) {
-    this.#submitRecipeBtn.addEventListener('click', function (e) {
+    this.#submitRecipeBtn.addEventListener('click', e => {
       e.preventDefault();
       try {
+        this.#validateForm();
         const dataArr = [...new FormData(this.parentElement)];
         const data = Object.fromEntries(dataArr);
         handler(data);
       } catch (e) {
-        console.error(e);
+        // this.renderError(e.message);
       }
     });
+  }
+  #validateForm() {
+    for (const el of this.parentElement.querySelectorAll('[required]')) {
+      if (!el.reportValidity()) {
+        throw new Error('Please fill in all fields');
+      }
+    }
   }
 
   render() {

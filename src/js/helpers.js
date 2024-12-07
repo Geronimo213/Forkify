@@ -7,6 +7,11 @@ export const timeout = function (s) {
     }, s * 1000);
   });
 };
+export const delay = function (s) {
+  return new Promise(resolve => {
+    setTimeout(resolve, s * 1000);
+  });
+};
 // export const getJSON = async url => {
 //   try {
 //     const res = await Promise.race([
@@ -47,15 +52,20 @@ export const fetchJSON = async (url, recipeData = null) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: recipeData ? JSON.stringify(recipeData) : null,}
-    );
-    const res = await Promise.race([response, timeout(CONSTANTS.TIME_OUT_SECONDS)]);
+      body: recipeData ? JSON.stringify(recipeData) : null,
+    });
+    const res = await Promise.race([
+      response,
+      timeout(CONSTANTS.TIME_OUT_SECONDS),
+    ]);
     const responseData = await res.json();
     if (!response.ok) {
-      return Promise.reject(Error(`${responseData.message} (${response.status})`));
+      return Promise.reject(
+        Error(`${responseData.message} (${response.status})`),
+      );
     }
     return responseData;
   } catch (error) {
     throw error;
   }
-}
+};

@@ -80,7 +80,7 @@ const handleAddRecipe = async function (data) {
     window.history.pushState(null, '', `#${model.state.recipe.id}`);
     // Render bookmarks
     bookmarksView.render(model.state.bookmarks);
-    // Close form
+    // Close form after delay
     setTimeout(() => {
       // Close form window
       addRecipeView.toggleWindow();
